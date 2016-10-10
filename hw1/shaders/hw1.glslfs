@@ -1,0 +1,25 @@
+#version 130
+
+in vec2 vs_pos;
+out vec3 color;
+
+uniform sampler1D tex;
+uniform vec2 center;
+uniform float scale;
+uniform int iter;
+uniform float magic;
+
+void main()
+{
+    vec2 c = vs_pos * scale + center;
+    int i;
+    vec2 z = c;
+    for(i = 0; i < iter; i++) {
+        vec2 z2 = vec2(z.x * z.x - z.y * z.y, z.y * z.x + z.x * z.y) + c;
+        if (dot(z2, z2) > 4.0) {
+            break;
+        }
+        z = z2;
+    }
+    color = texture1D(tex, (i == iter) ? 0 : (float(i) / iter * magic)).rgb;
+}
