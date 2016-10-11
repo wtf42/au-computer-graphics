@@ -17,11 +17,18 @@ public:
     ~sample_t();
 
     void draw_frame();
-    void scroll(int x, int y, int dir);
+    void scroll(vec2 pos, int dir);
+    void drag_start(vec2 pos);
+    void drag_move(vec2 pos);
+    void drag_end();
 
 private:
     void init_texture();
     void init_vao();
+
+    bool drag_started = false;
+    vec2 drag_center;
+    vec2 drag_click;
 
     float center_x = -0.5f, center_y = 0.0f, scale = 1.0f, magic = 1.0f;
     int iterations = 50;
@@ -110,19 +117,40 @@ void sample_t::init_texture()
     glUniform1i(glGetUniformLocation(program_, "tex"), 0);
 }
 
-void sample_t::scroll(int x, int y, int dir)
+void sample_t::scroll(vec2 pos, int dir)
 {
-    float const w = (float)glutGet(GLUT_WINDOW_WIDTH);
-    float const h = (float)glutGet(GLUT_WINDOW_HEIGHT);
-    vec2 pt = (vec2(x / w, (h - y) / h) - vec2(0.5, 0.5)) * 2.0;
     float new_scale = pow(1.5f, -dir);
     vec2 old_center(center_x, center_y);
-    vec2 new_center = (old_center + pt * scale) - pt * (scale * new_scale);
+    vec2 new_center = (old_center + pos * scale) - pos * (scale * new_scale);
     center_x = new_center.x;
     center_y = new_center.y;
     scale = scale * new_scale;
 
     TwRefreshBar(bar_);
+}
+
+void sample_t::drag_start(vec2 pos)
+{
+    drag_center = vec2(center_x, center_y);
+    drag_click = pos;
+    drag_started = true;
+    drag_move(pos);
+}
+
+void sample_t::drag_end()
+{
+    drag_started = false;
+}
+
+void sample_t::drag_move(vec2 pos)
+{
+    if (!drag_started) {
+        return;
+    }
+    vec2 old_center(center_x, center_y);
+    vec2 new_center = drag_center + drag_click * scale - pos * scale;
+    center_x = new_center.x;
+    center_y = new_center.y;
 }
 
 void sample_t::draw_frame()
@@ -147,6 +175,12 @@ void sample_t::draw_frame()
 ///////////////////////////////////////////////////////////////////////////////////////
 
 unique_ptr<sample_t> g_sample;
+
+vec2 pt2vec(int x, int y) {
+    float const w = (float)glutGet(GLUT_WINDOW_WIDTH);
+    float const h = (float)glutGet(GLUT_WINDOW_HEIGHT);
+    return (vec2(x / w, (h - y) / h) - vec2(0.5, 0.5)) * 2.0;
+}
 
 // отрисовка кадра
 void display_func()
@@ -180,9 +214,31 @@ void keyboard_func(unsigned char button, int x, int y)
     }
 }
 
+void mouse_func(int button, int state, int x, int y)
+{
+    if (TwEventMouseButtonGLUT(button, state, x, y)) {
+        return;
+    }
+    if (button == GLUT_LEFT_BUTTON) {
+        if (state == GLUT_DOWN) {
+            g_sample->drag_start(pt2vec(x, y));
+        } else {
+            g_sample->drag_end();
+        }
+    }
+}
+
+void mouse_motion_func(int x, int y)
+{
+    if (TwEventMouseMotionGLUT(x, y)) {
+        return;
+    }
+    g_sample->drag_move(pt2vec(x, y));
+}
+
 void mouse_wheel_func(int button, int dir, int x, int y)
 {
-    g_sample->scroll(x, y, dir);
+    g_sample->scroll(pt2vec(x, y), dir);
 }
 
 // Отработка изменения размеров окна
@@ -241,11 +297,12 @@ int main(int argc, char ** argv)
     glutIdleFunc(idle_func);
     glutCloseFunc(close_func);
     glutKeyboardFunc(keyboard_func);
+
+    glutMouseFunc(mouse_func);
+    glutMotionFunc(mouse_motion_func);
     glutMouseWheelFunc(mouse_wheel_func);
 
     // подписываемся на события для AntTweakBar'а
-    glutMouseFunc((GLUTmousebuttonfun)TwEventMouseButtonGLUT);
-    glutMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
     glutPassiveMotionFunc((GLUTmousemotionfun)TwEventMouseMotionGLUT);
     glutSpecialFunc((GLUTspecialfun)TwEventSpecialGLUT);
     TwGLUTModifiersFunc(glutGetModifiers);
