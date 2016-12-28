@@ -1,0 +1,11 @@
+#version 330
+
+in vec3 vs_pos;
+out vec4 color;
+
+uniform samplerCube box;
+
+void main()
+{
+    color = texture(box, vs_pos);
+}

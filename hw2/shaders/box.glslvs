@@ -1,0 +1,14 @@
+#version 330
+
+in vec3 in_pos;
+out vec3 vs_pos;
+
+uniform mat4 view;
+uniform mat4 proj;
+
+void main()
+{
+    vec4 pos = proj * view * vec4(in_pos, 1.0);
+    gl_Position = pos.xyww;
+    vs_pos = in_pos;
+}
