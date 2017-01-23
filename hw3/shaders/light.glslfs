@@ -1,0 +1,49 @@
+#version 330 core
+
+uniform sampler2D gbuffer_pos;
+uniform sampler2D gbuffer_norm;
+uniform sampler2D gbuffer_diffuse;
+uniform sampler2D gbuffer_specular;
+
+out vec4 out_light;
+
+struct Light {
+    vec3 position;
+    float size;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+uniform Light light;
+uniform vec2 window;
+uniform vec3 camera;
+
+void main()
+{
+    vec2 uv = gl_FragCoord.xy / window;
+    vec3 position = texture(gbuffer_pos, uv).xyz;
+    vec3 normal = texture(gbuffer_norm, uv).xyz;
+    vec3 kd = texture(gbuffer_diffuse, uv).rgb;
+    vec3 ka = kd;
+    vec4 ks = texture(gbuffer_specular, uv).rgba;
+
+    // Ambient
+    vec3 ambient = light.ambient * ka;
+
+    // Diffuse
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(light.position - position);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = light.diffuse * diff * kd;  
+
+    // Specular
+    vec3 viewDir = normalize(camera - position);
+    vec3 reflectDir = reflect(-lightDir, norm);  
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), ks.a);
+    vec3 specular = light.specular * spec * ks.rgb;
+    
+    float distance = length(light.position - position) / light.size;
+    float attenuation = 1.0 / (1.0 + 2.0 * distance + 1.0 * (distance * distance));
+
+    out_light = vec4(attenuation * (ambient + diffuse + specular), 1.0f);
+}
