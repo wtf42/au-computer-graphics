@@ -26,6 +26,7 @@ public:
     void camera_drag(vec2 delta);
     void camera_update();
     void toggle_spheres();
+    void toggle_centers();
     void toggle_light(int idx);
 
 private:
@@ -38,10 +39,12 @@ private:
     float speed2 = 0.05f;
     float speed3 = 0.005f;
     bool show_sphere = false;
+    bool show_center = true;
     int mode = 0;
 
     int window_width, window_height;
-    vec3 cam_position_ = vec3(0, 0, 1.0);
+    //vec3 cam_position_ = vec3(0, 0, 1.0);
+    vec3 cam_position_ = vec3(0, 1.0, 1.0);
     float fov_ = 45.0f;
     mat4 view;
     mat4 proj;
@@ -49,6 +52,10 @@ private:
     vector<light_t> lights;
     void init_lights();
     void update_lights();
+    size_t get_additional_lights();
+    void set_additional_lights(size_t count);
+    static void TW_CALL get_lights_callback(void *value, void *clientData);
+    static void TW_CALL set_lights_callback(const void *value, void *clientData);
 
     GLuint gbuffer_shader_;
     GLuint light_shader_;
@@ -58,6 +65,7 @@ private:
     unique_ptr<gbuffer_t> gbuffer_;
     unique_ptr<lbuffer_t> lbuffer_;
     unique_ptr<obj_t> quad_;
+    unique_ptr<obj_t> quad2_;
     unique_ptr<obj_t> sphere_;
     unique_ptr<obj_t> bunny_;
 
@@ -65,6 +73,7 @@ private:
     void draw_lbuffer();
     void draw_combined();
     void draw_spheres();
+    void draw_sphere_centers();
 
     TwBar *bar_;
 };
@@ -118,6 +127,14 @@ private:
     GLuint vao_, vbo_;
 };
 
+struct quad2_t : obj_t {
+    quad2_t(GLuint shader);
+    ~quad2_t();
+    void draw();
+private:
+    GLuint vao_, vbo_;
+};
+
 struct sphere_t : obj_t {
     sphere_t(GLuint shader);
     ~sphere_t();
@@ -134,4 +151,10 @@ struct light_t {
     vec3 diffuse;
     vec3 specular;
     bool enabled;
+
+    struct position_params_t {
+        double A, B, a, b, d;
+        vec3 zero, dx, dy;
+    } position_params;
+    void update_position(double t);
 };

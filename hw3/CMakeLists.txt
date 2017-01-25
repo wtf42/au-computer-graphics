@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(hw3)
 
-set(cpps main.cpp shader.cpp controls.cpp obj.cpp quad.cpp sphere.cpp gbuffer.cpp lbuffer.cpp lights.cpp)
+set(cpps main.cpp shader.cpp controls.cpp obj.cpp quad.cpp quad2.cpp sphere.cpp gbuffer.cpp lbuffer.cpp lights.cpp)
 set(headers main.h shader.h common.h)
 
 IF (WIN32)

@@ -1,7 +1,8 @@
 #include "main.h"
 
 float horizontalAngle = pi<float>();
-float verticalAngle = 0.0f;
+//float verticalAngle = 0.0f;
+float verticalAngle = -pi<float>() / 3;
 
 vec3 get_direction() {
     return vec3(

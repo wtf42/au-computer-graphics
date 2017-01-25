@@ -114,3 +114,28 @@ void sample_t::draw_spheres() {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
+
+void sample_t::draw_sphere_centers() {
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendEquation(GL_FUNC_ADD);
+    glBlendFunc(GL_ONE, GL_ONE);
+
+    glUseProgram(sphere_shader_);
+
+    for (const light_t& light : lights) {
+        if (!light.enabled) continue;
+
+        mat4 model;
+        model = translate(model, light.position);
+        model = scale(model, vec3(1, 1, 1) * 0.01);
+        mat4 mvp = proj * view * model;
+
+        vec3 color = light.diffuse;
+
+        glUniformMatrix4fv(glGetUniformLocation(sphere_shader_, "mvp"), 1, GL_FALSE, value_ptr(mvp));
+        glUniform3fv(glGetUniformLocation(sphere_shader_, "color"), 1, value_ptr(color));
+
+        sphere_->draw();
+    }
+}

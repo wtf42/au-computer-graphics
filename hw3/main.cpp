@@ -12,7 +12,7 @@ sample_t::sample_t()
     TwInit(TW_OPENGL, NULL);
 
     bar_ = TwNewBar("Parameters");
-    TwDefine("Parameters size='500 150' color='70 100 120' valueswidth=220 iconpos=topleft iconified=true");
+    TwDefine("Parameters size='500 170' color='70 100 120' valueswidth=220 iconpos=topleft iconified=true");
     
     gbuffer_shader_ = load_shaders("shaders/gbuffer.glslvs", "shaders/gbuffer.glslfs");
     light_shader_ = load_shaders("shaders/light.glslvs", "shaders/light.glslfs");
@@ -25,6 +25,7 @@ sample_t::sample_t()
     lbuffer_.reset(new lbuffer_t(window_width, window_height));
 
     bunny_.reset(new bunny_t(gbuffer_shader_));
+    quad2_.reset(new quad_t(gbuffer_shader_));
     quad_.reset(new quad_t(0));
     sphere_.reset(new sphere_t(0));
 
@@ -33,11 +34,13 @@ sample_t::sample_t()
     camera_update();
 
     TwAddVarRW(bar_, "show spheres", TW_TYPE_BOOLCPP, &show_sphere, "");
+    TwAddVarRW(bar_, "show sphere centers", TW_TYPE_BOOLCPP, &show_center, "");
     TwAddVarRW(bar_, "light 0 (ambient)", TW_TYPE_BOOLCPP, &lights[0].enabled, "");
     TwAddVarRW(bar_, "light 1 (neutral)", TW_TYPE_BOOLCPP, &lights[1].enabled, "");
     TwAddVarRW(bar_, "light 2 (red)", TW_TYPE_BOOLCPP, &lights[2].enabled, "");
     TwAddVarRW(bar_, "light 3 (green)", TW_TYPE_BOOLCPP, &lights[3].enabled, "");
     TwAddVarRW(bar_, "light 4 (blue)", TW_TYPE_BOOLCPP, &lights[4].enabled, "");
+    TwAddVarCB(bar_, "additional lights", TW_TYPE_UINT32, set_lights_callback, get_lights_callback, this, "");
 }
 
 sample_t::~sample_t()
@@ -94,6 +97,11 @@ void sample_t::toggle_spheres()
     show_sphere = !show_sphere;
 }
 
+void sample_t::toggle_centers()
+{
+    show_center = !show_center;
+}
+
 void sample_t::change_mode()
 {
     ++mode;
@@ -141,6 +149,9 @@ void sample_t::draw_frame()
     draw_combined();
     if (show_sphere) {
         draw_spheres();
+    }
+    if (show_center) {
+        draw_sphere_centers();
     }
     //glDisable(GL_DEPTH_TEST);
     //glDisable(GL_BLEND);
@@ -208,6 +219,9 @@ void keyboard_func(unsigned char key, int x, int y)
         break;
     case 'z':
         g_sample->toggle_spheres();
+        break;
+    case 'x':
+        g_sample->toggle_centers();
         break;
     case 'm':
         g_sample->change_mode();

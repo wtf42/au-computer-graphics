@@ -13,6 +13,6 @@ uniform mat4 proj;
 void main()
 {
     gl_Position = proj * view * model * vec4(in_pos, 1);
-    vs_pos = in_pos;
-    vs_norm = in_norm;
+    vs_pos = vec3(model * vec4(in_pos, 1));
+    vs_norm = vec3(model * vec4(in_norm, 1));
 }
