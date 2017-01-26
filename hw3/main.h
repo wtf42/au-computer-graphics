@@ -48,6 +48,7 @@ private:
     float fov_ = 45.0f;
     mat4 view;
     mat4 proj;
+    float gamma = 2.2f;
 
     vector<light_t> lights;
     void init_lights();

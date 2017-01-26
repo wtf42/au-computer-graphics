@@ -59,6 +59,7 @@ void sample_t::draw_lbuffer() {
     vec2 window_size(window_width, window_height);
     glUniform2fv(glGetUniformLocation(light_shader_, "window"), 1, value_ptr(window_size));
     glUniform3fv(glGetUniformLocation(light_shader_, "camera"), 1, value_ptr(cam_position_));
+    glUniform1f(glGetUniformLocation(light_shader_, "gamma"), gamma);
 
     for (const light_t& light : lights) {
         if (!light.enabled) continue;

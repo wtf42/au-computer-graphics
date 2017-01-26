@@ -17,6 +17,7 @@ struct Light {
 uniform Light light;
 uniform vec2 window;
 uniform vec3 camera;
+uniform float gamma;
 
 void main()
 {
@@ -43,7 +44,10 @@ void main()
     vec3 specular = light.specular * spec * ks.rgb;
     
     float distance = length(light.position - position) / light.size;
-    float attenuation = 1.0 / (1.0 + 2.0 * distance + 1.0 * (distance * distance));
+    float attenuation = 1.0 / (1.0 + 0.1 * distance + 0.01 * (distance * distance));
 
-    out_light = vec4(attenuation * (ambient + diffuse + specular), 1.0f);
+    vec3 light = attenuation * (ambient + diffuse + specular);
+    light = pow(light, vec3(gamma));
+
+    out_light = vec4(light, 1.0f);
 }

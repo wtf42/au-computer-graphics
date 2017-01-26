@@ -12,7 +12,7 @@ sample_t::sample_t()
     TwInit(TW_OPENGL, NULL);
 
     bar_ = TwNewBar("Parameters");
-    TwDefine("Parameters size='500 170' color='70 100 120' valueswidth=220 iconpos=topleft iconified=true");
+    TwDefine("Parameters size='300 180' color='70 100 120' valueswidth=70 iconpos=topleft iconified=true");
     
     gbuffer_shader_ = load_shaders("shaders/gbuffer.glslvs", "shaders/gbuffer.glslfs");
     light_shader_ = load_shaders("shaders/light.glslvs", "shaders/light.glslfs");
@@ -41,6 +41,7 @@ sample_t::sample_t()
     TwAddVarRW(bar_, "light 3 (green)", TW_TYPE_BOOLCPP, &lights[3].enabled, "");
     TwAddVarRW(bar_, "light 4 (blue)", TW_TYPE_BOOLCPP, &lights[4].enabled, "");
     TwAddVarCB(bar_, "additional lights", TW_TYPE_UINT32, set_lights_callback, get_lights_callback, this, "");
+    TwAddVarRW(bar_, "gamma", TW_TYPE_FLOAT, &gamma, "");
 }
 
 sample_t::~sample_t()
@@ -136,6 +137,7 @@ void sample_t::draw_combined()
     glUniform1i(glGetUniformLocation(combine_shader_, "lbuffer"), 3);
 
     glUniform1i(glGetUniformLocation(combine_shader_, "mode"), mode);
+    glUniform1f(glGetUniformLocation(combine_shader_, "gamma"), gamma);
 
     quad_->draw();
 }
