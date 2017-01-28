@@ -10,7 +10,7 @@ lbuffer_t::lbuffer_t(int width, int height) {
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_buf_);
 
-    light_tex_ = gen_texture(width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+    light_tex_ = gen_texture(width, height, GL_RGBA16F, GL_RGBA, GL_FLOAT);
 
     glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, light_tex_, 0);
 
@@ -89,9 +89,7 @@ void sample_t::draw_lbuffer() {
 
 void sample_t::draw_spheres() {
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendEquation(GL_FUNC_ADD);
-    glBlendFunc(GL_ONE, GL_ONE);
+    glDisable(GL_BLEND);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -118,9 +116,7 @@ void sample_t::draw_spheres() {
 
 void sample_t::draw_sphere_centers() {
     glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-    glBlendEquation(GL_FUNC_ADD);
-    glBlendFunc(GL_ONE, GL_ONE);
+    glDisable(GL_BLEND);
 
     glUseProgram(sphere_shader_);
 

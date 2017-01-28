@@ -74,7 +74,7 @@ void sample_t::draw_gbuffer() {
 
     mat4 model2;
     model2 = translate(model2, vec3(0, -0.25, 0));
-    model2 = rotate(model2, pi<float>() / 2, vec3(1, 0, 0));
+    model2 = rotate(model2, -pi<float>() / 2, vec3(1, 0, 0));
     glUniformMatrix4fv(glGetUniformLocation(gbuffer_shader_, "model"), 1, GL_FALSE, value_ptr(model2));
     quad2_->draw();
 

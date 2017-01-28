@@ -15,19 +15,19 @@ void sample_t::init_lights() {
         { // neutral
             vec3(0, 1, 0),
             1.1f,
-            vec3(0.1f, 0.1f, 0.1f),
+            vec3(0, 0, 0),
             vec3(0.3f, 0.3f, 0.3f),
             vec3(0.1f, 0.1f, 0.1f),
-            true,
+            false,
             {}
         },
         { // red
             vec3(0, 0, 0),
             0.3f,
-            vec3(0.3f, 0, 0),
-            vec3(0.3f, 0, 0),
-            vec3(0.3f, 0, 0),
-            true,
+            vec3(0, 0, 0),
+            vec3(0.8f, 0, 0),
+            vec3(1.0f, 0, 0),
+            false,
             {
                 1, 1, 0.5, 0.5, pi<double>(),
                 vec3(0, 0, 0),
@@ -38,10 +38,10 @@ void sample_t::init_lights() {
         { // green
             vec3(0, 0, 0),
             0.5f,
-            vec3(0, 0.3f, 0),
-            vec3(0, 0.3f, 0),
-            vec3(0, 0.3f, 0),
-            true,
+            vec3(0, 0, 0),
+            vec3(0, 0.8f, 0),
+            vec3(0, 1.0f, 0),
+            false,
             {
                 1, 1, 0.5, 0.5, pi<double>() / 2.0,
                 vec3(0, 0, 0),
@@ -52,10 +52,10 @@ void sample_t::init_lights() {
         { // blue
             vec3(0, 0, 0),
             0.3f,
-            vec3(0, 0, 0.3f),
-            vec3(0, 0, 0.3f),
-            vec3(0, 0, 0.3f),
-            true,
+            vec3(0, 0, 0),
+            vec3(0, 0, 0.8f),
+            vec3(0, 0, 1.0f),
+            false,
             {
                 1, 1, 0.5, 1.0, pi<double>() / 2.0,
                 vec3(0, 0, 0),
@@ -64,6 +64,7 @@ void sample_t::init_lights() {
             }
         }
     };
+    set_additional_lights(10);
 }
 
 void light_t::update_position(double t) {
@@ -100,16 +101,17 @@ void sample_t::set_additional_lights(size_t count) {
     lights.resize(5 + count);
     for (size_t i = 5; i < lights.size(); ++i) {
         vec3 color = vec3(rnd(), rnd(), rnd());
+        color /= max(color.r, color.g, color.b);
         lights[i] = {
             vec3(0, 0, 0),
-            0.2f,
-            color,
-            color,
-            color,
+            0.6f,
+            vec3(),
+            color * 1.0,
+            color * 1.0,
             true,
             {
-                1, 1, 1 * rnd(), 1 * rnd(), pi<double>() / 2.0 * rnd(),
-                vec3(rnd() / 2, -0.1, rnd() / 2),
+                1, 1, lights_speed * rnd(), lights_speed * rnd(), pi<double>() / 2.0 * rnd(),
+                vec3(rnd() / 2, lights_height, rnd() / 2),
                 vec3(0.5, 0, 0),
                 vec3(0, 0, 0.5),
             }

@@ -28,6 +28,8 @@ public:
     void toggle_spheres();
     void toggle_centers();
     void toggle_light(int idx);
+    size_t get_additional_lights();
+    void set_additional_lights(size_t count);
 
 private:
     void update_projection();
@@ -49,12 +51,12 @@ private:
     mat4 view;
     mat4 proj;
     float gamma = 2.2f;
+    float lights_height = -0.15f;
+    float lights_speed = 0.9f;
 
     vector<light_t> lights;
     void init_lights();
     void update_lights();
-    size_t get_additional_lights();
-    void set_additional_lights(size_t count);
     static void TW_CALL get_lights_callback(void *value, void *clientData);
     static void TW_CALL set_lights_callback(const void *value, void *clientData);
 

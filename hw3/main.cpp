@@ -25,7 +25,7 @@ sample_t::sample_t()
     lbuffer_.reset(new lbuffer_t(window_width, window_height));
 
     bunny_.reset(new bunny_t(gbuffer_shader_));
-    quad2_.reset(new quad_t(gbuffer_shader_));
+    quad2_.reset(new quad2_t(gbuffer_shader_));
     quad_.reset(new quad_t(0));
     sphere_.reset(new sphere_t(0));
 
@@ -42,6 +42,8 @@ sample_t::sample_t()
     TwAddVarRW(bar_, "light 4 (blue)", TW_TYPE_BOOLCPP, &lights[4].enabled, "");
     TwAddVarCB(bar_, "additional lights", TW_TYPE_UINT32, set_lights_callback, get_lights_callback, this, "");
     TwAddVarRW(bar_, "gamma", TW_TYPE_FLOAT, &gamma, "");
+    TwAddVarRW(bar_, "lights height", TW_TYPE_FLOAT, &lights_height, "step=0.05");
+    TwAddVarRW(bar_, "lights speed", TW_TYPE_FLOAT, &lights_speed, "step=0.1");
 }
 
 sample_t::~sample_t()
@@ -224,6 +226,13 @@ void keyboard_func(unsigned char key, int x, int y)
         break;
     case 'x':
         g_sample->toggle_centers();
+        break;
+    case 'c':
+        g_sample->toggle_light(1);
+        g_sample->toggle_light(2);
+        g_sample->toggle_light(3);
+        g_sample->toggle_light(4);
+        g_sample->set_additional_lights(10 - g_sample->get_additional_lights());
         break;
     case 'm':
         g_sample->change_mode();

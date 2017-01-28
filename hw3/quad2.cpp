@@ -23,7 +23,7 @@ quad2_t::quad2_t(GLuint shader) {
 
     GLuint in_norm = glGetAttribLocation(shader, "in_norm");
     glEnableVertexAttribArray(in_norm);
-    glVertexAttribPointer(in_norm, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(in_norm, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 
     glBindVertexArray(0);
 }
